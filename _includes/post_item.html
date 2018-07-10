@@ -1,0 +1,36 @@
+{% assign post=include.post %}
+
+<article class="section post-item">
+  <div class="row">
+    <div class="col s9">
+      <h1 class="title"><a href="{{ post.url }}">{{ post.title }}</a></h1>
+      <p class="content">
+        {% for more in site.post_conf.more_tag %}
+        {% if post.content contains more %}
+            {% assign more_tag = more %}
+            {% break %}
+        {% endif %}
+      {% endfor %}
+
+      {{ post.content | split:more_tag | first }}
+      </p>
+      <p class="hint">
+        <time datetime="{{ post.date | date_to_xmlschema }}"><span>{{ post.date | date: "%b %d, %Y" }}</span></time>
+        <span>&nbsp;•&nbsp;</span>
+        <span>
+          {% for tag in post.categories %}
+          <a href="{{ site.baseurl }}/categories/index.html#{{ post.categories | cgi_encode }}"
+            title="Other posts from the {{ tag | capitalize }} category"
+            class="hidden-link">
+            {{ tag | capitalize }}
+          </a>
+          {% unless forloop.last %}&nbsp;/&nbsp;{% endunless %}
+          {% endfor %}
+        </span>
+      </p>
+    </div>
+    <!-- <div class="col s3">
+      <img/>
+    </div> -->
+  </div>
+</article>

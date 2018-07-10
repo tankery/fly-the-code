@@ -1,0 +1,32 @@
+---
+layout: default
+
+config:
+  styles: ['main']
+---
+
+{% if site.paginate %}
+    {% assign container = paginator %}
+{% else %}
+    {% assign container = site %}
+{% endif %}
+
+<div class="home">
+
+  <div class="banner-container valign-wrapper">
+    <div class="container">
+      <h1 class="row header center-on-small-only">{{ site.title }}</h1>
+      <p class="row header center-on-small-only">{{ site.description }}</p>
+    </div>
+  </div>
+
+  <div class="container">
+    {% for post in container.posts %}
+      {% include post_item.html post=post %}
+    {% endfor %}
+
+    <!-- Pagination -->
+    {% include pagination.html %}
+  </div>
+
+</div>

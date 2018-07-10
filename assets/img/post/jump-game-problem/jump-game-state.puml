@@ -1,0 +1,30 @@
+@startuml
+
+storage true as t
+storage true as tt
+storage false as tf
+storage true as ttt
+storage false as ttf
+storage true as tft
+storage false as tff
+storage true as ttft
+storage false as ttff
+storage true as tfft
+storage false as tfff
+rectangle ... as ttto
+rectangle ... as tfto
+
+t --> tt : > 0
+t --> tf : <= 0
+tt --> ttt : > 0
+tt --> ttf : <= 0
+tf --> tft : > 1
+tf --> tff : <= 1
+ttt --> ttto : ...
+tft --> tfto : ...
+ttf --> ttft : > 1
+ttf --> ttff : <= 1
+tff --> tfft : > 2
+tff --> tfff : <= 2
+
+@enduml
