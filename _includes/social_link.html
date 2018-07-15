@@ -1,12 +1,17 @@
 {% assign name=include.name %}
 {% assign user=include.user %}
 {% assign link=include.link %}
-{% assign style=include.style %}
 
 {% unless link %}
   {% assign link = site.data.socials[name] %}
 {% endunless %}
 
 {% if link %}
-<a class="{{ style }}" href="{{ link }}{{ user }}"><i class="fa fa-{{ name }} fa-fw left"></i>{% assign words = name | split: '-' %}{% for word in words %}{{ word | capitalize }} {% endfor %}</a>
+<a class="social-link" href="{{ link }}{{ user }}">
+  <span class="fa-stack fa-lg">
+      <i class="fa fa-circle fa-stack-2x grey-text text-lighten-4"></i>
+      <i class="fa fa-{{ name }} fa-stack-1x"></i>
+  </span>
+  <!-- <i class="fa fa-{{ name }} fa-fw left"></i>{% assign words = name | split: '-' %}{% for word in words %}{{ word | capitalize }} {% endfor %} -->
+</a>
 {% endif %}

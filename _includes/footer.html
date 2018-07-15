@@ -1,23 +1,29 @@
 <footer class="page-footer">
   <div class="container">
     <div class="row">
-      <div class="col l4 s12">
-        <h5 class="white-text">{{ site.title }}</h5>
-        <p class="grey-text text-lighten-4">{{ site.description }}</p>
+      <div class="col l4 s12 center-align">
+        <div class="footer-block">
+          <h5 class="white-text">{{ site.title }}</h5>
+          <p class="grey-text text-lighten-4">{{ site.description }}</p>
+        </div>
       </div>
-      <div class="col l4 s12">
-        <h5 class="white-text">Life On Web</h5>
-        {% include social_list.html %}
+      <div class="col l4 s12 center-align">
+        <div class="footer-block">
+          <h5 class="white-text">Life On Web</h5>
+          {% include social_list.html %}
+        </div>
       </div>
-      <div class="col l4 s12">
-        <h5 class="white-text">Credits</h5>
-        <p class="grey-text text-lighten-4">{{ site.credits }}</p>
+      <div class="col l4 s12 center-align">
+        <div class="footer-block">
+          <h5 class="white-text">Credits</h5>
+          <p class="grey-text text-lighten-4">{{ site.credits }}</p>
+        </div>
       </div>
     </div>
   </div>
   <div class="footer-copyright">
     <div class="container">
-    Copyright © 2016 <a href="{{ site.owner.link }}">{{ site.owner.name }}</a>
+    Copyright © {{ site.time | date: '%Y' }} <a class="hidden-link" href="{{ site.owner.link }}">{{ site.owner.name }}</a>
     <a class="grey-text text-lighten-4 right" href="mailto:{{ site.owner.email }}">{{ site.owner.email }}</a>
     </div>
   </div>

@@ -15,17 +15,19 @@ config:
 
   <div class="banner-container valign-wrapper">
     <div class="container">
-      <h1 class="row header center-on-small-only">{{ site.title }}</h1>
-      <p class="row header center-on-small-only">{{ site.description }}</p>
+      <h1 class="header center-on-small-only caption">{{ site.title }}</h1>
+      <p class="header center-on-small-only description">{{ site.description }}</p>
     </div>
   </div>
 
-  <div class="container">
+  <div class="post-container container">
     {% for post in container.posts %}
       {% include post_item.html post=post %}
     {% endfor %}
+  </div>
 
-    <!-- Pagination -->
+  <!-- Pagination -->
+  <div class="post-pagination container">
     {% include pagination.html %}
   </div>
 
