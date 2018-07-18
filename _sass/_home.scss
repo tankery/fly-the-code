@@ -12,6 +12,10 @@
 
   .header {
     color: #FFF;
+
+    @media #{$medium-and-down} {
+      text-align: center;
+    }
   }
 
   .caption {

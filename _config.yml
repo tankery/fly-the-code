@@ -32,15 +32,14 @@ future:      true
 paginate:    5
 paginate_path: "page:num"
 
-# Links to include in footer navigation
-# For external links add external: true
+# Links to include in site navigation
 site_links:
   - title: Home
     url: https://tankery.me/
-    external: true
+    current: false
   - title: Blog
     url: https://blog.tankery.me/
-    external: true
+    current: true
 
 # Links to include in footer navigation
 # For external links add external: true
@@ -53,7 +52,7 @@ page_links:
   - title: Categories
     url: /categories
   - title: Feed
-    url: /feed
+    url: /feed.xml
 
 # Specific social links, now we support following social account:
 # github, twitter, weibo, google-plus, instagram, facebook, stack-overflow

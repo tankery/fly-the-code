@@ -1,8 +1,16 @@
 <nav class="top-nav">
   <div class="container">
     <div class="nav-wrapper">
-      <a href="{{ site.baseurl }}/" class="brand-logo">{{ site.title }}</a>
+      {% assign owners = site.owner.name | split: " " | first | append: "'s" %}
+      {% assign current_site = site.site_links | where_exp: "item", "item.current" | first %}
+      <a href="{{ site.baseurl }}/" class="brand-logo">{{ owners }} {{ current_site.title }}</a>
+      <ul class="right hide-on-med-and-down">
+        {% include site_nav.html %}
+      </ul>
     </div>
     <a href="#" data-activates="nav-mobile" class="button-collapse top-nav full hide-on-large-only"><i class="mdi-navigation-menu"></i></a>
   </div>
 </nav>
+<!-- <ul class="side-nav" id="nav-mobile">
+  {% include site_nav.html %}
+</ul> -->

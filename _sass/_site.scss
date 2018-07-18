@@ -29,13 +29,21 @@ a.hidden-link:hover {
   text-decoration: underline;
 }
 
-footer .grey-text {
-  font-weight: lighter;
+footer {
+  a {
+    @extend .hidden-link;
+  }
+  .grey-text {
+    font-weight: lighter;
+  }
 }
-
-footer a {
-  @extend .hidden-link;
-  color: inherit;
+ul.social-list {
+  li {
+    display: inline;
+  }
+  a.social-link {
+    color: $primary-color;
+  }
 }
 
 a.button-collapse.top-nav {
@@ -65,13 +73,4 @@ ul.side-nav.fixed ul.collapsible-accordion {
 
 i.fa.left, i.fa.right {
   float: none !important;
-}
-
-ul.social-list {
-  li {
-    display: inline;
-  }
-  a.social-link {
-    color: inherit;
-  }
 }
