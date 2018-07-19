@@ -35,20 +35,7 @@
 
   <div class="row">
     <div class="col s12">
-      <p class="hint">
-        <time datetime="{{ post.date | date_to_xmlschema }}"><span>{{ post.date | date: "%b %d, %Y" }}</span></time>
-        <span>&nbsp;•&nbsp;</span>
-        <span>
-          {% for tag in post.categories %}
-          <a href="{{ site.baseurl }}/categories/index.html#{{ post.categories | cgi_encode }}"
-            title="Other posts from the {{ tag | capitalize }} category"
-            class="hidden-link">
-            {{ tag | capitalize }}
-          </a>
-          {% unless forloop.last %}&nbsp;/&nbsp;{% endunless %}
-          {% endfor %}
-        </span>
-      </p>
+      {% include post_meta.html post=post %}
     </div>
   </div>
 </article>
