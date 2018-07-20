@@ -11,7 +11,7 @@ $secondary-color: {{ site.palette.secondary }};
 @import "components/color-classes";
 
 // Variables;
-@import "components/globalVars";
+@import "components/vars-global";
 @import "components/variables";
 
 // Reset

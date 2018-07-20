@@ -4,7 +4,7 @@
 @charset "UTF-8";
 
 // Variables;
-@import "components/globalVars";
+@import "components/vars-global";
 
 $primary-color: {{ site.palette.primary }};
 $secondary-color: {{ site.palette.secondary }};
