@@ -1,0 +1,98 @@
+# Welcome to Jekyll!
+#
+# This config file is meant for settings that affect your whole blog, values
+# which you are expected to set up once and rarely need to edit after that.
+# For technical reasons, this file is *NOT* reloaded automatically when you use
+# 'jekyll serve'. If you change this file, please restart the server process.
+
+#####################
+# Site configs
+title: Fly The Code
+logo: assets/img/fly_the_code.png
+owner:
+  name: Tankery Chen
+  link: https://tankery.me
+  email: hi (at) tankery.me
+description: >
+  Fly the Code, Fly my Life<br>
+  希望有一天，代码能如风一般飞奔在原野
+credits: >
+  Made by Jekyll & powered by <a href="https://materializecss.com/">Materialize</a>
+# the subpath of your site, e.g. /blog
+# Currently under a project page.
+baseurl: "/fly-the-code"
+disqus_shortname: tankery
+
+# https://github.com/mojombo/jekyll/wiki/Permalinks
+permalink:   /:categories/:title
+
+# http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+timezone:    Asia/Shanghai
+future:      true
+paginate:    5
+paginate_path: "page:num"
+
+# Links to include in site navigation
+site_links:
+  - title: Home
+    url: https://tankery.me/
+    current: false
+  - title: Blog
+    url: https://blog.tankery.me/
+    current: true
+
+# Links to include in footer navigation
+# For external links add external: true
+page_links:
+  - title: Home
+    url: /
+    external: false
+  - title: Featured
+    url: /featured
+  - title: Categories
+    url: /categories
+  - title: Feed
+    url: /feed.xml
+
+# Specific social links, now we support following social account:
+# github, twitter, weibo, google-plus, instagram, facebook, stack-overflow
+# To support more social links, edit url in _data/socials.yml
+# Remenber, always use a name that support by Font Awesome, to make sure the
+# icon is shown.
+socials:
+  - name: github
+    user: tankery
+  - name: stack-overflow
+    user: 1038900
+  - name: google-plus
+    user: TankeryChen
+
+#####################
+# Site styles
+palette: # light-green
+  primary: "#33691E"
+  secondary: "#558B2F"
+  tertiary: "#558B2F"
+  colored_text: "#558B2F"
+  highlight: "#558B2F"
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+# Some settings for post
+post_conf:
+  more_tag:
+    - <!--break-->
+    - <!-- break -->
+    - <!--more-->
+    - <!-- more -->
+  more_text: Read More...
+
+plugins:
+  - jekyll-paginate
+  - jekyll-feed
+
+sass:
+  #style: compressed

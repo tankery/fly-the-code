@@ -1,0 +1,9 @@
+{% for page_link in site.page_links %}
+  {% if page_link.external %}
+    {% assign link = page_link.url %}
+  {% else %}
+    {% assign link = page_link.url | prepend: site.baseurl %}
+  {% endif %}
+
+  <li><a href="{{ link }}">{{ page_link.title }}</a></li>
+{% endfor %}

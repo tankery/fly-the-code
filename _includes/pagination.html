@@ -1,0 +1,21 @@
+
+{% if paginator.total_pages > 1 %}
+<div class="section pagination">
+  {% assign prev_text = "<i class='fa fa-angle-left fa-fw'></i> Newer" %}
+  {% assign next_text = "Older <i class='fa fa-angle-right fa-fw'></i>" %}
+
+  {% if paginator.previous_page %}
+  <a class="waves-effect waves-teal btn-flat" href="{{ paginator.previous_page_path | prepend: site.baseurl | replace: '//', '/' }}">{{ prev_text }}</a>
+  {% else %}
+  <span class="disabled btn-flat">{{ prev_text }}</span>
+  {% endif %}
+
+  <span class="page_number ">Page {{ paginator.page }} of {{ paginator.total_pages }}</span>
+
+  {% if paginator.next_page %}
+  <a class="waves-effect waves-teal btn-flat" href="{{ paginator.next_page_path | prepend: site.baseurl | replace: '//', '/' }}">{{ next_text }}</a>
+  {% else %}
+  <span class="disabled btn-flat">{{ next_text }}</span>
+  {% endif %}
+</div>
+{% endif %}
