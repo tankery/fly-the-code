@@ -32,11 +32,16 @@
   margin: 32px auto;
 
   .post-item {
-    margin: 32px 0;
+    margin: 32px -0.75rem; // calibrate padding of col
 
     .row {
       margin-bottom: 0;
     }
+
+    // .row, .col {
+    //   padding-left: 0;
+    //   padding-right: 0;
+    // }
   }
 
   .post-content {
@@ -79,7 +84,7 @@
 
       .post-image {
         height: 100%;
-        padding-bottom: 0.5rem;  // 0.5rem to match text line-height.
+        padding-bottom: 0.25rem;  // 0.25rem to match text line-height.
 
         .img {
           height: 100%;

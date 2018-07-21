@@ -94,26 +94,23 @@ And can use a block, image will be scaled down if needed:
 
 ![alt text]({{site.baseurl}}/assets/img/fly_the_code-196x196.png)
 
-You can make the image clickable with link:
-
-[![alt text]({{site.baseurl}}/assets/img/post/why-we-need-indexes-for-database/loughborough-university-library.jpg)](# "Link of image")
-
 If you need the image be centered, use a class `center`:
 
 <img class="center" src="{{site.baseurl}}/assets/img/fly_the_code-196x196.png">
+
+You can make the image clickable with link:
+
+[![alt text]({{site.baseurl}}/assets/img/post/why-we-need-indexes-for-database/loughborough-university-library.jpg)](# "Link of image")
 
 ## Code
 
 We can use `inline code` in sentence. Also, a block of code also availiable:
 
-``` html
-<head>
-    <title>Fly the Code</title>
-</head>
-<body>
-    <h1>Welcom!</h1>
-    <p>Fly the Code, Fly my Life</p>
-</body>
+``` javascript
+$(document).ready(function(){
+  // initialize sidenav plugin of Materialize
+  $('.sidenav').sidenav();
+});
 ```
 
 Block code support lots of language syntax highlighting.
