@@ -6,15 +6,23 @@
 // }
 
 .post-header-container {
+
   .parallax {
     background-color: $secondary-color;
   }
 
-  .post-header {
-    color: #FFF;
+  .image-mask {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.2)) left repeat;
+  }
 
-    .h1 {
-      font-size: 2.6rem;
+  .post-header {
+    color: white;
+
+    h1 {
+      font-size: 2.8rem;
     }
 
     @media #{$medium-and-down} {
@@ -24,6 +32,9 @@
 }
 
 .post-content {
+  margin-top: 32px;
+  margin-bottom: 32px;
+
   // Header Styles
   h1 { font-size: 3rem; }
   h2 { font-size: 2.2rem; }
@@ -46,6 +57,7 @@
     padding: 1.25rem;
     background: rgba(240, 240, 240, 0.8);
     margin-bottom: 1.5625rem;
+    overflow: scroll;
   }
 
   p > code {

@@ -96,7 +96,7 @@ SELECT count(*) FROM `data_point`
 
 这样的一个查询，需要给每一行数据都做比较，确定 type, time, account 是否符合条件。其复杂度是 O(N)。这个性能有多差呢？看看下面这个图来直观的感受下：
 
-![Comparison of Binary Search: O(log n) to Full Scan: O(n)](/assets/img/post/why-we-need-indexes-for-database/performance-of-bin-search-and-scan.png)
+![Comparison of Binary Search: O(log n) to Full Scan: O(n)]({{ site.baseurl }}/assets/img/post/why-we-need-indexes-for-database/performance-of-bin-search-and-scan.png)
 > 来源：[Jason Feinstein 的博客](https://medium.com/@JasonWyatt/squeezing-performance-from-sqlite-indexes-indexes-c4e175f3c346)
 
 也就是说，随着数据量的增大，对排序过的数据做二分查找，其时间增长相对 O(N) 来说，几乎可以忽略不计了。
