@@ -1,0 +1,12 @@
+---
+layout: page
+permalink: /featured/
+title: Featured Posts
+description: "An archive of posts sorted by date."
+---
+
+{% for post in site.posts %}
+{% if post.featured %}
+  {% include post_item.html post=post %}
+{% endif %}
+{% endfor %}

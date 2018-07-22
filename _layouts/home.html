@@ -1,8 +1,6 @@
 ---
 layout: default
-
-config:
-  styles: ['main']
+styles: ['main']
 ---
 
 {% if site.paginate %}
@@ -15,8 +13,10 @@ config:
 
   <div class="banner-container valign-wrapper">
     <div class="container">
-      <h1 class="header caption">{{ site.title }}</h1>
-      <p class="header description">{{ site.description }}</p>
+      <header>
+        <h1 class="caption">{{ site.title }}</h1>
+        <p class="description">{{ site.description }}</p>
+      </header>
     </div>
   </div>
 

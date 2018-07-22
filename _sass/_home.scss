@@ -10,7 +10,10 @@
   background-color: $secondary-color;
   min-height: 322px;
 
-  .header {
+  header {
+    display: block;
+    margin: 2rem auto;
+
     color: #FFF;
 
     @media #{$medium-and-down} {
@@ -21,6 +24,12 @@
   .caption {
     text-transform: uppercase;
     font-weight: bold;
+    line-height: 100%;
+    margin: 2rem 0;
+
+    @media #{$medium-and-down} {
+      margin: 2rem auto;
+    }
   }
 
   .description {
@@ -28,83 +37,10 @@
   }
 }
 
-.post-container {
-  margin: 32px auto;
-
-  .post-item {
-    margin: 32px -0.75rem; // calibrate padding of col
-
-    .row {
-      margin-bottom: 0;
-    }
-
-    // .row, .col {
-    //   padding-left: 0;
-    //   padding-right: 0;
-    // }
-  }
-
-  .post-content {
-    .title {
-      font-size: 2rem;
-      font-weight: bold;
-      line-height: 1;
-      margin: 0 0 0.8rem 0;
-    }
-
-    .content {
-      max-height: 6rem;
-      overflow: hidden;
-      color: rgba(0, 0, 0, 0.7);
-    }
-  }
-
-  .post-image {
-    .img {
-      min-height: 8rem;
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: 50% 50%;
-    }
-  }
-
-  .post-meta {
-    color: rgba(0, 0, 0, 0.4);
-  }
-}
-
-@media #{$medium-and-up} {
-  .post-item {
-    .post-article {
-      display: flex;
-
-      .row {
-        flex: 1 1 auto;
-      }
-
-      .post-image {
-        height: 100%;
-        padding-bottom: 0.25rem;  // 0.25rem to match text line-height.
-
-        .img {
-          height: 100%;
-        }
-      }
-    }
-  }
-}
-
-@media #{$small-and-down} {
-  .post-item {
-    .post-content {
-      margin-bottom: 0.75rem;
-    }
-    .post-image {
-      .img {
-        width: 100%;
-        height: 16rem;
-      }
-    }
+.page {
+  .caption {
+    max-width: 50%;
+    min-width: 25rem;
   }
 }
 

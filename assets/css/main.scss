@@ -12,6 +12,8 @@ $colored-text-color: {{ site.palette.colored_text }};
 $highlight-color: {{ site.palette.highlight }};
 
 @import "colors";
-@import "site";
+@import "common";
 @import "post";
+@import "post-list";
 @import "home";
+@import "tags";

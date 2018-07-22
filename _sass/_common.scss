@@ -46,6 +46,28 @@ ul.social-list {
   }
 }
 
+nav {
+  .nav-wrapper ul li.active {
+    background: transparent;
+
+    a {
+      padding: 0;
+      margin: 0 15px;
+      background: linear-gradient(transparent 96%, white 96%, white);
+    }
+  }
+}
+
+@media #{$large-and-up} {
+  nav {
+    .nav-wrapper {
+      ul {
+        margin-right: -15px;
+      }
+    }
+  }
+}
+
 @media #{$medium-and-down} {
   nav {
     .nav-wrapper {

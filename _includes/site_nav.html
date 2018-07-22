@@ -5,5 +5,11 @@
     {% assign link = page_link.url | prepend: site.baseurl %}
   {% endif %}
 
-  <li><a href="{{ link }}">{{ page_link.title }}</a></li>
+  {% if page.url == page_link.url %}
+    {% assign sa = "active" %}
+  {% else %}
+    {% assign sa = "" %}
+  {% endif %}
+
+  <li class="{{ sa }}"><a href="{{ link }}">{{ page_link.title }}</a></li>
 {% endfor %}
