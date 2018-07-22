@@ -48,9 +48,9 @@ page_links:
     url: /
     external: false
   - title: Featured
-    url: /featured
+    url: /featured/
   - title: Categories
-    url: /categories
+    url: /categories/
   - title: Feed
     url: /feed.xml
 

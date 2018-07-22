@@ -1,24 +1,27 @@
 ---
 layout: default
+styles: ['post']
 ---
-<header>
-  <div class="post-header-container parallax-container valign-wrapper">
+<div class="post-page">
+  <header>
+    <div class="post-header-container parallax-container valign-wrapper">
 
-    <div class="parallax">
-      {% if page.image %}
-      <img src="{{ site.baseurl }}/assets/img/post/{{ page.image.feature }}">
-      <div class="image-mask"></div>
-      {% endif %}
+      <div class="parallax">
+        {% if page.image %}
+        <img src="{{ site.baseurl }}/assets/img/post/{{ page.image.feature }}">
+        <div class="image-mask"></div>
+        {% endif %}
+      </div>
+
+      <div class="post-header container">
+        <h1 class="post-title">{{ page.title }}</h1>
+        {% include post_meta.html post=page %}
+      </div>
+
     </div>
+  </header>
 
-    <div class="post-header container">
-      <h1 class="post-title">{{ page.title }}</h1>
-      {% include post_meta.html post=page %}
-    </div>
-
+  <div class="post-content container">
+    {{ content }}
   </div>
-</header>
-
-<div class="post-content container">
-  {{ content }}
 </div>
