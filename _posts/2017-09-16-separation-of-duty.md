@@ -14,7 +14,7 @@ image:
   creditlink: "https://pixabay.com/en/iceberg-water-blue-ocean-ice-1421411/"
 comments: true
 mathjax: null
-featured: true
+featured: false
 published: true
 ---
 

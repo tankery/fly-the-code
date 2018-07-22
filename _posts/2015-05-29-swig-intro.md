@@ -11,7 +11,7 @@ tags:
   - 第三方库
 comments: true
 mathjax: null
-featured: true
+featured: false
 published: true
 ---
 

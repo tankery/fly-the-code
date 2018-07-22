@@ -10,7 +10,7 @@ tags:
   - Audio
 comments: true
 mathjax: null
-featured: true
+featured: false
 published: true
 ---
 

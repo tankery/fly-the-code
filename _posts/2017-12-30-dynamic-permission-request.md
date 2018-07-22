@@ -15,7 +15,7 @@ image:
   creditlink: https://www.flickr.com/photos/schill/4813392151
 comments: true
 mathjax: null
-featured: true
+featured: false
 published: true
 ---
 

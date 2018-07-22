@@ -11,7 +11,7 @@ tags:
   - Jekyll
 comments: true
 mathjax: null
-featured: true
+featured: false
 published: true
 ---
 

@@ -11,7 +11,7 @@ tags:
   - Before Android 4.1
 comments: true
 mathjax: null
-featured: true
+featured: false
 published: true
 ---
 
