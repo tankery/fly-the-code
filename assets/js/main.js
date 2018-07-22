@@ -2,6 +2,8 @@ $(document).ready(function(){
   // side bar navigation
   $('.sidenav').sidenav();
 
-  // Initialize parallax image.
-  $('.parallax').parallax();
+  if ($('.parallax > img').length) {
+    // Initialize parallax image.
+    $('.parallax').parallax();
+  }
 });
