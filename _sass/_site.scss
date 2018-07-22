@@ -46,29 +46,23 @@ ul.social-list {
   }
 }
 
-a.button-collapse.top-nav {
-  position:absolute;
-  text-align:center;
-  top:0;
-  float:none;
-  margin-left:1.5rem;
-  color:#fff;
-  font-size:32px;
-  z-index:2;
-}
-@media #{$small-and-down}{a.button-collapse.top-nav{left:5%;}}
-@media #{$medium-and-down}{nav .nav-wrapper{text-align:center;}}
+@media #{$medium-and-down} {
+  nav {
+    .nav-wrapper {
+      text-align:center;
+    }
 
-ul.side-nav.fixed {
-  overflow:hidden;
-}
+    .sidenav-trigger {
+      margin-left: 0;
+    }
 
-ul.side-nav.fixed li:hover, ul.side-nav.fixed li:active, ul.side-nav.fixed li.active {
-  background-color: rgba(0,0,0,0.05);
-}
-
-ul.side-nav.fixed ul.collapsible-accordion {
-  background-color: #fff;
+    .brand-logo {
+      left: 40px;
+      right: 40px;
+      margin: auto;
+      transform: inherit;
+    }
+  }
 }
 
 i.fa.left, i.fa.right {

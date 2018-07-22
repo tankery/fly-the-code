@@ -95,4 +95,4 @@ plugins:
   - jekyll-feed
 
 sass:
-  #style: compressed
+  style: compressed

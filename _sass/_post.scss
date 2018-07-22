@@ -1,14 +1,75 @@
 
-pre {
-  padding: 1.25rem;
-  background: rgba(240, 240, 240, 0.8);
-  margin-bottom: 1.5625rem;
+// .post-page {
+//   .parallax-container .parallax img {
+//     opacity: 1;
+//   }
+// }
+
+header {
+  .parallax-container {
+    height: 40vh;
+    min-height: 20rem;
+  }
 }
 
-.table-of-contents {
-  min-width: 124px;
+.post-header-container {
+
+  .parallax {
+    background-color: $secondary-color;
+  }
+
+  .image-mask {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.2)) left repeat;
+  }
+
+  .post-header {
+    color: white;
+
+    h1 {
+      font-size: 2.8rem;
+    }
+
+    @media #{$medium-and-down} {
+      text-align: center;
+    }
+  }
 }
 
-.doc-footer .doc-links li i {
-  vertical-align: middle;
+.post-content {
+  margin-top: 32px;
+  margin-bottom: 32px;
+
+  // Header Styles
+  h1 { font-size: 3rem; }
+  h2 { font-size: 2.2rem; }
+  h3 { font-size: 1.6rem; }
+  h4 { font-size: 1.2rem; font-weight: bold; }
+  h5 { font-size: 1rem; font-weight: bold; }
+  h6 { font-size: 1rem; font-weight: bold; }
+
+  img, video {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .center {
+    display: block;
+    margin: auto;
+  }
+
+  pre {
+    padding: 1.25rem;
+    background: rgba(240, 240, 240, 0.8);
+    margin-bottom: 1.5625rem;
+    overflow: scroll;
+  }
+
+  p > code {
+    padding: 0.15rem 0.5rem;
+    border-radius: 0.25rem;
+    background: rgba(240, 240, 240, 0.8);
+  }
 }

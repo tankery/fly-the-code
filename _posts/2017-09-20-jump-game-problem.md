@@ -46,7 +46,7 @@ And we can take more round to iterate all numbers.
 
 Here is a diagram shows the state transition when iterating:
 
-![Jump Game State](/images/post/jump-game-problem/jump-game-state.png)
+![Jump Game State]({{site.baseurl}}/assets/img/post/jump-game-problem/jump-game-state.png)
 
 In this diagram, we can find the simple pattern of state transition:
 
