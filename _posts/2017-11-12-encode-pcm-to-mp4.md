@@ -38,12 +38,12 @@ published: true
 
 那么就一步步检查问提把，首先看看 MediaCodec，根据官方的文档，了解到作者使用的是一个过时的方式，手动获取到 MediaCodec 的 input buffers，将原始音频一段一段的输入到指定的 buffer 上，然后 enqueue，这几段音频会被传送到编码器上进行编码，完事以后会放到 output buffers 上，需要手动的 query，看看是否有编码完成的 buffer 产生，有的话，就取出这几段 output buffer，并释放它。这个工作流程可以用下面的图来表示：
 
-![](/images/post/encode-pcm-to-mp4/mediacodec-buffer.jpg)
+![]({{ site.baseurl }}/assets/img/post/encode-pcm-to-mp4/mediacodec-buffer.jpg)
 
 
 另外，想要 MediaCodec 能够工作，我们需要处理好它的状态。它的状态，分为两个大的部分，一部分是 Stopped 状态，一部分是 Executing 状态。初始化时，处于 Stopped 的 Uninitialized 状态，需要经过配置（设置编码格式、编码率等信息）以后，进入 Configured 状态。start 之后就进入 Executing 的 Flushed 状态了。此后，如果通过 enqueue 输入了第一个音频数据，MediaCodec 会进入 Running 状态进行编码，以后不断的接收 enqueue 的 input buffer，并把编码输入放到 output buffer。直到收到 EOS (End of Stream) 信息后，进入 End of Stream 状态。 stop 后，回到 Uninitialized 的状态。状态变化如下图：
 
-![](/images/post/encode-pcm-to-mp4/mediacodec-state.jpg)
+![]({{ site.baseurl }}/assets/img/post/encode-pcm-to-mp4/mediacodec-state.jpg)
 
 前文说了。这是一种过时的方式，新的使用姿势，应该是用 async 方式，接收更新回调后做动作，而不是不断的 query。详情可以查看[MediaCodec 的官方文档](https://developer.android.com/reference/android/media/MediaCodec.html)。
 

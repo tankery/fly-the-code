@@ -35,7 +35,7 @@ Hackathon 真的是一项非常不错的活动，在极短时间内，完成一�
 其核心算法，在于步频识别以及歌曲频率分析这两块。
 UI是下面这个样子：
 
-![Pace plaing screenshot]({{ site.baseurl }}/images/post/ticwear-hackathon/playing.jpg "Pace plaing screenshot")
+![Pace plaing screenshot]({{ site.baseurl }}/assets/img/post/ticwear-hackathon/playing.jpg "Pace plaing screenshot")
 
 本次比赛采用的手表是Moto 360 搭载出门问问出品的Ticwear操作系统。
 从UI上说，手表是圆形表盘，底部有个黑条，可以通过手势操作应用，但从左往又滑动的操作已经被系统定义为退出应用的手势，不可用；
@@ -63,7 +63,7 @@ UI是下面这个样子：
 
 于是就有了下面的手表设计图：
 
-![Pace playing wear]({{ site.baseurl }}/images/post/ticwear-hackathon/playing-wear.png "Pace playing wear")
+![Pace playing wear]({{ site.baseurl }}/assets/img/post/ticwear-hackathon/playing-wear.png "Pace playing wear")
 
 考虑到交互的粗放性，我采用上抛删除（有些抛弃的隐喻）、向左滑动切歌（内容跟随手指做阻尼运动）、向下滑动喜爱/不喜爱（爱心logo跟随手指做阻尼运动），这样的手势设计，而整个界面都可以点击播放/暂停。
 

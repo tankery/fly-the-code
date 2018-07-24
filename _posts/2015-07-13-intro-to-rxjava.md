@@ -64,7 +64,7 @@ C c = getCFromB(b);
 
 而异步函数呢，如果使用回调，将会陷入一个叫做回调地狱的窘境中，有多囧，见图：
 
-![Callback Hell]({{ site.baseurl }}/images/post/intro-to-rxjava/callback-hell.jpg "Callback Hell")
+![Callback Hell]({{ site.baseurl }}/assets/img/post/intro-to-rxjava/callback-hell.jpg "Callback Hell")
 
 具体到上面的例子，如果每个函数都是异步的，我们会遇到这样代码：
 

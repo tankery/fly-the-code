@@ -36,47 +36,47 @@ Amazon 在20年前，创立之初的广告语是”One million titles, consisten
 
 职责分离这么一件看似简单的事情，其实蕴含了非常多的内容。它指导你写出逻辑清晰的代码、健壮的代码，甚至性能优越的代码。下面是我贴出一些关键内容。
 
-![](/images/post/separation-of-duty/15062496205816.jpg)
+![]({{ site.baseurl }}/assets/img/post/separation-of-duty/15062496205816.jpg)
 
-![](/images/post/separation-of-duty/15062495054333.jpg)
+![]({{ site.baseurl }}/assets/img/post/separation-of-duty/15062495054333.jpg)
 
-![](/images/post/separation-of-duty/15062496983664.jpg)
+![]({{ site.baseurl }}/assets/img/post/separation-of-duty/15062496983664.jpg)
 
-![](/images/post/separation-of-duty/15062497264638.jpg)
+![]({{ site.baseurl }}/assets/img/post/separation-of-duty/15062497264638.jpg)
 
-![](/images/post/separation-of-duty/15062497390859.jpg)
+![]({{ site.baseurl }}/assets/img/post/separation-of-duty/15062497390859.jpg)
 
-![](/images/post/separation-of-duty/15062497506066.jpg)
+![]({{ site.baseurl }}/assets/img/post/separation-of-duty/15062497506066.jpg)
 
-![](/images/post/separation-of-duty/15062497564585.jpg)
+![]({{ site.baseurl }}/assets/img/post/separation-of-duty/15062497564585.jpg)
 
-![](/images/post/separation-of-duty/15062497651268.jpg)
+![]({{ site.baseurl }}/assets/img/post/separation-of-duty/15062497651268.jpg)
 
-![](/images/post/separation-of-duty/15062497723576.jpg)
+![]({{ site.baseurl }}/assets/img/post/separation-of-duty/15062497723576.jpg)
 
-![](/images/post/separation-of-duty/15062498337511.jpg)
+![]({{ site.baseurl }}/assets/img/post/separation-of-duty/15062498337511.jpg)
 
-![](/images/post/separation-of-duty/15062498564437.jpg)
+![]({{ site.baseurl }}/assets/img/post/separation-of-duty/15062498564437.jpg)
 
-![](/images/post/separation-of-duty/15062498644124.jpg)
+![]({{ site.baseurl }}/assets/img/post/separation-of-duty/15062498644124.jpg)
 
-![](/images/post/separation-of-duty/15062498845339.jpg)
+![]({{ site.baseurl }}/assets/img/post/separation-of-duty/15062498845339.jpg)
 
-![](/images/post/separation-of-duty/15062498940433.jpg)
+![]({{ site.baseurl }}/assets/img/post/separation-of-duty/15062498940433.jpg)
 
-![](/images/post/separation-of-duty/15062503742881.jpg)
+![]({{ site.baseurl }}/assets/img/post/separation-of-duty/15062503742881.jpg)
 
-![](/images/post/separation-of-duty/15062503840607.jpg)
+![]({{ site.baseurl }}/assets/img/post/separation-of-duty/15062503840607.jpg)
 
-![](/images/post/separation-of-duty/15062503891976.jpg)
+![]({{ site.baseurl }}/assets/img/post/separation-of-duty/15062503891976.jpg)
 
-![](/images/post/separation-of-duty/15062503935669.jpg)
+![]({{ site.baseurl }}/assets/img/post/separation-of-duty/15062503935669.jpg)
 
-![](/images/post/separation-of-duty/15062504024113.jpg)
+![]({{ site.baseurl }}/assets/img/post/separation-of-duty/15062504024113.jpg)
 
-![](/images/post/separation-of-duty/15062504091209.jpg)
+![]({{ site.baseurl }}/assets/img/post/separation-of-duty/15062504091209.jpg)
 
-![](/images/post/separation-of-duty/15062504256388.jpg)
+![]({{ site.baseurl }}/assets/img/post/separation-of-duty/15062504256388.jpg)
 
 
 想查看完整内容，可以看看这里： [http://slide.tankery.me/separation-of-duty](http://slide.tankery.me/separation-of-duty)

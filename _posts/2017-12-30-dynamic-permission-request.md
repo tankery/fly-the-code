@@ -51,7 +51,7 @@ published: true
 
 下图展示了 Permission Reuquester 是如何完成一次权限请求的：
 
-![](/images/post/dynamic-permission-request/permission-request-policy.png)
+![]({{ site.baseurl }}/assets/img/post/dynamic-permission-request/permission-request-policy.png)
 
 从图中我们看到。如果没有被授权，Permission Requester 会在一开始，就尝试通过系统接口去请求权限，如果你的请求是合理的，而且和用户目标关联，那绝大部分用户会很乐意直接同意这个请求。若用户拒绝，Requester 会弹出一个解释对话框（内容是你指定的），告诉用户我们为什么需要这个权限，并问他是不是要重新请求一下。如果“是”，则重新请求，如果”否“，Requester 会退出，并返回一个授权失败的结果。如果很不幸，用户在拒绝系统权限请求时，点选了”不再提醒“，那么 Requester 会弹出另一个解释对话框，并问他要不要去设置里开启权限。
 

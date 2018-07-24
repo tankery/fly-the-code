@@ -32,7 +32,7 @@ published: true
 
 哦，对了，这个公众号的 Logo 也是自己设计的呢，o 不 ok 呀？^_^
 
-![](/images/post/fly_the_code_qrcode.jpg)
+![]({{ site.baseurl }}/assets/img/post/fly_the_code_qrcode.jpg)
 
 
 
