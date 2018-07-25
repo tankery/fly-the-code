@@ -76,13 +76,15 @@ Also support nested list:
 1. list parent 1.
     - Sub list item.
     - Support multi level nesting.
-        1. Another level.
+        - Another level.
+          1. Deep ordered list.
+        - Sibling.
 2. Still couting the ordered number.
-3. And line breaks for list item:
-
+3. And line breaks for list item:<br>
     Here is content align to this item.
 
     New paragraph is also avaliable.
+4. Continue the list.
 
 ## Links and Images
 
