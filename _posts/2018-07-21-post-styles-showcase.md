@@ -117,6 +117,16 @@ $(document).ready(function(){
 
 Block code support lots of language syntax highlighting.
 
+And I write a block of JS code to support copy and paste code to [WeChat Artical Editor](https://mp.weixin.qq.com/), try copy and paste following code block to WeChat editor to see the magic:
+
+``` java
+@Override
+@NonNull
+public String getMessage() {
+    return "Hello " + "world!";
+}
+```
+
 ## Table
 
 Support different align type for table, and emphasis inside table cell:
