@@ -22,6 +22,8 @@ credits: >
 # currently distributed on root path.
 baseurl: ""
 disqus_shortname: tankery
+# Uncomment this and paste your Google Analytics Tracking Id here
+# google_analytics: UA-your-id
 
 # https://github.com/mojombo/jekyll/wiki/Permalinks
 permalink:   /:categories/:title
