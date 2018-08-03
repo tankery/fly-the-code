@@ -13,3 +13,7 @@
 
   <!-- JavaScript for Site -->
   <script type="text/javascript" src="{{ "/assets/js/main.js" | prepend: site.baseurl }}"></script>
+
+  {% if site.google_analytics %}
+    {% include analytics.html %}
+  {% endif %}
