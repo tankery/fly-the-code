@@ -24,4 +24,15 @@ styles: ['post']
   <div class="post-content container">
     {{ content }}
   </div>
+
+  <div class="post-footer container">
+
+    {% include signature.html %}
+
+    {% include share.html %}
+
+    {% if site.disqus_shortname and page.comments == true %}
+      {% include comments.html %}
+    {% endif %}
+  </div>
 </div>
