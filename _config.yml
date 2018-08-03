@@ -23,7 +23,7 @@ credits: >
 baseurl: ""
 disqus_shortname: tankery
 # Uncomment this and paste your Google Analytics Tracking Id here
-# google_analytics: UA-your-id
+google_analytics: UA-78794791-1
 
 # https://github.com/mojombo/jekyll/wiki/Permalinks
 permalink:   /:categories/:title
