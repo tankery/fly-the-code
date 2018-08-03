@@ -19,8 +19,8 @@ description: >
 credits: >
   Made by Jekyll & powered by <a href="https://materializecss.com/">Materialize</a>
 # the subpath of your site, e.g. /blog
-# Currently under a project page.
-baseurl: "/fly-the-code"
+# currently distributed on root path.
+baseurl: ""
 disqus_shortname: tankery
 
 # https://github.com/mojombo/jekyll/wiki/Permalinks
