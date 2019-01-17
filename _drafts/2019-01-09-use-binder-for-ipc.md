@@ -11,11 +11,13 @@ comments: true
 published: true
 ---
 
-Binder 可以说是Android系统最重要的基石之一，你能想到的各种涉及跨进程调用的场景，几乎都是使用Binder机制实现，比如 broadcast receiver，比如 content provider，比如 Activity result，等等。掌握了 Binder，就会发现处理跨进程通讯就变得游刃有余了。
+什么是 Binder？我面试时听到过很多答案，比如 “bindService 返回的那个对象”，“binder 就是 AIDL”。。如果你的理解仅限于 Service 的场景，那你的世界就太小了。
+
+Binder 可以说是 Android 系统最重要的基石之一，你能想到的各种涉及跨进程调用的场景，几乎都是使用 Binder 机制实现，比如 broadcast receiver，比如 content provider，比如 Activity result，等等。了解了 Binder，就拿到了新世界的船票，可以尽情畅游在跨进程的世界里了。
 
 <!--more-->
 
-但是请放心，今天我不会分析这些系统应用，也不会介绍具体实现细节。更不会深入去阅读 Binder 机制的源码。因为网络上这样的分析已经非常多，也有非常好的资料可供学习。（附录贴出了一些参考资料）
+但是请放心，今天我不会分析这些系统应用，也不会介绍具体实现细节。更不会深入去阅读 Binder 机制的源码。因为网络上这样的分析已经非常多，也有非常好的资料可供学习。才疏学浅的我，就不在这儿误导你了，真想了解的话，附录贴出了一些参考资料可以看看。
 
 我今天要做的是“拿来主义”，Binder 已经这么好了，拿来用用呗。
 
@@ -25,7 +27,7 @@ Binder 可以说是Android系统最重要的基石之一，你能想到的各种
 
 比如运动需要监听心率变化，睡眠也需要监听心率变化，而心率模块还希望做全天24小时的心率监测。
 
-如果是同一个进程，使用观察者模式就能很轻易的解决这个问题（多个模块同时观察同一个数据源）。但这些功能都处在不同的App中，属于不同的进程。这时候，事情就变得有意思起来：如何能实现一个跨进程的观察者呢？
+如果是同一个进程，使用观察者模式就能很轻易的解决这个问题（多个模块同时观察同一个数据源）。但这些功能都处在不同的App中，属于不同的进程。这时候，事情就变得有意思起来：怎样才能实现一个跨进程的观察者呢？
 
 ## 方案的选择
 
@@ -39,22 +41,188 @@ Binder 可以说是Android系统最重要的基石之一，你能想到的各种
 
 ## Android 的基石 - Binder
 
-说 Binder 是 Android 的基石是一点也不为过的。你能想到的各种涉及跨进程调用的场景，几乎都是使用 Binder 机制实现。Binder 兼具了性能与安全，是其他 Linux 平台的跨进程方案无法比拟的。本文不会细谈 Binder 机制，但有几个关键点，希望你能有个映像：
+说 Binder 是 Android 的基石真是一点也不为过。你能想到的各种涉及跨进程调用的场景，几乎都是使用 Binder 机制实现。Binder 兼具了性能与安全，是其他 Linux 平台的跨进程方案无法比拟的。
 
-1. Binder 跨越了应用层、framework 层、内核层等多个层级，利用内核空间中进程间的可共享内存和内存映射机制，才实现了高效的跨进程通讯（减少内存拷贝次数）。
-2. Binder 采用 C/S 架构，Client 可以向 Server 发起一个附带数据的交易 (transact)，并收到回复（数据或异常）。
-3. 因为性能的考虑，Client, Server 如果在同一个进程，framework 层会直接在进程内操作交易，而无需使用 IPC 调用，和直接的函数调用无异。
-4. Client 可以监听 Server 进程的死亡事件。
+本文不会细谈 Binder 机制，只告诉你三个关键点，帮助你快速的了解 Binder
 
+1. **性能**：Binder 非常高效，利用内核驱动中的内存映射机制，实现了高效的跨进程通讯（减少内存拷贝次数），同时也在 framework 层做了处理，使得如果调用是发生在单一进程内部，效率与直接的函数调用无异。
+2. **架构**：Binder 采用 C/S 架构，Client 可以向 Server 发起一个附带数据的交易 (transact)，并收到回复（数据或异常）。
+3. **使用方式**：Binder 由 Server 创建，并通过 bindService，或者其他跨进程通讯方式，将 IBinder 接口传递给 Client，Client 持有反序列化出的 IBinder，即可利用此 IBinder 进行交易。
+
+了解了这些，就可以利用 Binder 进行高效的跨进程通讯了。
+
+下面举个例子：
+
+``` kotlin
+// Service (process=":remote")
+class MainService : Service() {
+    private val binder = object : Binder() {
+        override fun onTransact(code: Int, data: Parcel, reply: Parcel?, flags: Int): Boolean {
+            if (code == BINDER_TRANSACT_CODE) {
+                val value = data.readString()
+                Log.i(TAG, "Got value from activity: $value")
+            }
+            return super.onTransact(code, data, reply, flags)
+        }
+    }
+
+    override fun onBind(intent: Intent) = binder
+}
+
+// Activity
+class MainActivity : Activity(), ServiceConnection {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        ...
+        bindService(intent, this, Service.BIND_AUTO_CREATE)
+    }
+    ...
+    override fun onServiceConnected(name: ComponentName?, remote: IBinder?) {
+        Log.i(TAG, "Service connected, got binder $remote in activity")
+
+        val data = Parcel.obtain()
+        try {
+            data.writeString("Hello World!")
+            remote?.transact(BINDER_TRANSACT_CODE, data, null, 0)
+            ...
+        } finally {
+            data.recycle()
+        }
+    }
+    ...
+}
+```
+
+> （完整代码移步 GitHub： https://github.com/tankery/binder-demo）
+
+从这个代码看到，我们在独立进程的 Service 中创建了一个 Binder 对象，并重载 onTransaction 来接收交易信息。接着，在 onBind 函数返回 Binder 对象。
+
+这个对象，以 IBinder 的形式序列化，并传递给 Activity 的 onServiceConnected 方法。Activity 即可使用此 IBinder 对象发送交易了。
+
+运行代码，查看 logcat：
+
+```
+6694-6694/me.tankery.demo.binder I/binder.activity: Service connected, got binder android.os.BinderProxy@c7cd6b8 in activity
+6717-6732/me.tankery.demo.binder:remote I/binder.service: Got value from activity: Hello World!
+```
+
+你看，我们成功的从 Activity 所在进程，将 “Hello World” 传递到了 Service 进程。
+
+我看到很多文章都会强调 IInterface 的重要性，但说起它的用途，都是模棱两可的说到它是“Binder服务的基类”，或者说代表了Server “具备什么样的能力” 云云。
+
+但你看上文的例子，全程没有碰到 IInterface，说明 IInterface 并不是什么不可或缺的东西。那 IInterface 到底是一个什么样的存在？我们暂且按下不表。先来看看大家常用的 AIDL 是什么。
 
 ## AIDL
 
+AIDL 全称是 Android Interface Definition Language，Android 接口定义语言。它实际上就是一个 Android 创造的语言，但语法非常简单，用途也很单一，就是用来定义 Binder 相关接口的。
+
+使用 AIDL 语法定义好接口以后，Android build 会帮你生成对应的 Java 文件，定义好核心的几个用于数据通讯的类，方便你后续使用。
+
+废话不多说，先来看一个例子：
+
+``` aidl
+// IWelcome.aidl
+package me.tankery.demo.binder.aidl;
+
+interface IWelcome {
+    void hello(String words);
+}
+```
+
+这就是一个最简单的 AIDL 文件了，只定义了一个方法 `hello`。
+
+他生成的代码类似下面这样（省略大量错误判断和非关键逻辑）：
+
+``` java
+public interface IWelcome extends IInterface {
+    /**
+     * Local-side IPC implementation stub class.
+     */
+    public static abstract class Stub extends Binder implements IWelcome {
+
+        /**
+         * Construct the stub at attach it to the interface.
+         */
+        public Stub() {
+            this.attachInterface(this, DESCRIPTOR);
+        }
+
+        /**
+         * Cast an IBinder object into an me.tankery.demo.binder.aidl.IWelcome interface,
+         * generating a proxy if needed.
+         */
+        public static IWelcome asInterface(IBinder obj) {
+            IInterface iin = obj.queryLocalInterface(DESCRIPTOR);
+            if (iin instanceof IWelcome) {
+                return (IWelcome) iin;
+            }
+            return new IWelcome.Stub.Proxy(obj);
+        }
+
+        @Override
+        public IBinder asBinder() {
+            return this;
+        }
+
+        @Override
+        public boolean onTransact(int code, Parcel data, Parcel reply, int flags) {
+            switch (code) {
+                case TRANSACTION_hello: {
+                    data.enforceInterface(DESCRIPTOR);
+                    String _arg0 = data.readString();
+                    this.hello(_arg0);
+                    reply.writeNoException();
+                    return true;
+                }
+                default: {
+                    return super.onTransact(code, data, reply, flags);
+                }
+            }
+        }
+
+        private static class Proxy implements IWelcome {
+            private IBinder mRemote;
+
+            Proxy(IBinder remote) {
+                mRemote = remote;
+            }
+
+            @Override
+            public IBinder asBinder() {
+                return mRemote;
+            }
+
+            @Override
+            public void hello(String words) {
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeString(words);
+                    mRemote.transact(Stub.TRANSACTION_hello, _data, _reply, 0);
+                    _reply.readException();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+            }
+        }
+    }
+
+    public void hello(String words);
+}
+```
+
+
+
+## IInterface
+
 ## Service 是必须的吗？
 
-Server 端可以创建一个 Binder，并将 Binder 实现的 IBinder 接口序列化传递出去，Client 可以接收并持有这个 IBinder，即可利用此 IBinder 进行交易。
+
 
 ## 跨进程的 Listener
 
+Client 可以监听 Server 进程的死亡事件
 
 ## 后记
 
