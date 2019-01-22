@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 如何实现一个跨进程的观察者模式？
-description: "聊聊 Binder 的一个应用场景"
+description: "聊聊 Binder 的使用"
 categories:
   - development
 tags:
@@ -35,7 +35,9 @@ Binder 可以说是 Android 系统最重要的基石之一，你能想到的各�
 
 这些方案都有着各自的优势和适用场景。所以实际上，在我们的应用中，这些方式我们都在使用。比如运动会广播自己的运动状态变化（无需关心接收者），比如接收到手机消息时通过 start service 来处理消息，比如通过 provider 提供统一的运动数据接口，等等。
 
-但我发现，这些跨进程方案，都不适用于上文提到的问题。跨进程的数据监听，要求数据源像 observable 那样，能够知道都哪些 observer 在监听，以便动态的开启、关闭数据服务。更麻烦的是还得知道 observer 进程挂掉了，以便关闭服务。这就使得我们需要一套注册、注销机制来管理数据源，和数据对应的 observer，并且将指定数据精确的发布给它的 observer。
+但我发现，这些跨进程方案，都不适用于我们的场景。
+
+跨进程的数据监听，要求数据源像 observable 那样，能够知道都哪些 observer 在监听，以便动态的开启、关闭数据服务。更麻烦的是还得知道 observer 进程挂掉了，以便关闭服务。这就使得我们需要一套注册、注销机制来管理数据源，和数据对应的 observer，并且将指定数据精确的发布给它的 observer。
 
 于是，选择了直接使用 binder。
 
@@ -54,6 +56,7 @@ Binder 可以说是 Android 系统最重要的基石之一，你能想到的各�
 下面举个例子：
 
 ``` kotlin
+// Kotlin code
 // Service (process=":remote")
 class MainService : Service() {
     private val binder = object : Binder() {
@@ -107,9 +110,15 @@ class MainActivity : Activity(), ServiceConnection {
 
 你看，我们成功的从 Activity 所在进程，将 “Hello World” 传递到了 Service 进程。
 
-我看到很多文章都会强调 IInterface 的重要性，但说起它的用途，都是模棱两可的说到它是“Binder服务的基类”，或者说代表了Server “具备什么样的能力” 云云。
+再注意观察这个输出，你会发现，Activity 进程（Client 进程）拿到的 IBinder，并不是 Binder，而是 BinderProxy，为什么？
 
-但你看上文的例子，全程没有碰到 IInterface，说明 IInterface 并不是什么不可或缺的东西。那 IInterface 到底是一个什么样的存在？我们暂且按下不表。先来看看大家常用的 AIDL 是什么。
+因为 Binder 是在 Service 中，也就是 Server 进程创建的对象，当然无法共享给其他进程。因此，系统给 Client 进程创建了一个 BinderProxy，作为一个代理，负责与 Server 进程通讯。
+
+> 这里多解释一下代理（Proxy）设计模式。所谓代理，就是一个中间人，或者中介。你只需要和中介沟通，中介负责处理麻烦事儿（IPC），最终将你的要求传达给最终的对象。
+
+看过一些文章，或是使用过 binder 的朋友可能会有些惊讶，为什么没见到 IInterface？确实很多文章都会强调 IInterface 的重要性，但说起它的用途，都是模棱两可的说到它是“Binder服务的基类”，“Binder 通讯的核心类”，或者说代表了Server “具备什么样的能力” 云云。
+
+但你看上文的示例代码，全程没有碰到 IInterface，说明 IInterface 并不是什么不可或缺的东西。那 IInterface 到底是一个什么样的存在？我们暂且按下不表。先来看看大家常常提起的 AIDL 是什么。
 
 ## AIDL
 
@@ -130,25 +139,57 @@ interface IWelcome {
 
 这就是一个最简单的 AIDL 文件了，只定义了一个方法 `hello`。
 
-他生成的代码类似下面这样（省略大量错误判断和非关键逻辑）：
+他生成的代码类似下面这样（省略大量错误判断和非关键逻辑），我将文章直接写到了注释里，不要像编译器一样直接忽略了哈。。
 
 ``` java
+// Java code
+
+/**
+ * IWelcome 是我们定义的接口，和 AIDL 一致，包含了 void hello(String words) 方法。
+ * 并且，扩展了 IInterface，有什么用？看后文。
+ */
 public interface IWelcome extends IInterface {
+
+    public void hello(String words);
+
     /**
-     * Local-side IPC implementation stub class.
+     * “Local-side IPC implementation stub class.”
+     *
+     * Stub 是一个抽象类，Server 进程需继承 Stub，并实例化，用于初始化 IPC 环境，
+     * 以及接收跨进程消息。
+     *
+     * Stub 实现了 IWelcome，所以它也是一个 IInterface，并将 IWelcome 的方法
+     * 交给子类去实现。
      */
     public static abstract class Stub extends Binder implements IWelcome {
 
         /**
-         * Construct the stub at attach it to the interface.
+         * “Construct the stub at attach it to the interface.”
+         *
+         * 注意这里，Stub 初始化时，将自己（实际上是将继承类）绑定到 Binder 的
+         * interface 上。什么用？看后文。
          */
         public Stub() {
             this.attachInterface(this, DESCRIPTOR);
         }
 
         /**
-         * Cast an IBinder object into an me.tankery.demo.binder.aidl.IWelcome interface,
-         * generating a proxy if needed.
+         * “Cast an IBinder object into IWelcome interface,
+         * generating a proxy if needed.”
+         *
+         * 敲黑板！！！
+         * 我认为，IInterface 最核心的作用，就是这个方法做的事情了。
+         *
+         * 无论是哪个进程，拿到反序列化的 IBinder 以后，通过这个静态方法来获取
+         * IWelcome 接口。
+         *
+         * 如果是 Server 进程（local），可以从 binder 中直接取出之前 attach
+         * 的 IInterface 实例，那么调用 IWelcome 的方法，就相当于直接调用
+         * Stub 实例的方法了。
+         *
+         * 如果是 Client 进程，IBinder 只是系统在远程创建的一个 Proxy 类，
+         * 并无实现，因此，iin 将变成 null，此时 asInterface 会创建一个
+         * Stub.Proxy 代理类，来实现 IWelcome 接口。
          */
         public static IWelcome asInterface(IBinder obj) {
             IInterface iin = obj.queryLocalInterface(DESCRIPTOR);
@@ -158,27 +199,32 @@ public interface IWelcome extends IInterface {
             return new IWelcome.Stub.Proxy(obj);
         }
 
-        @Override
-        public IBinder asBinder() {
-            return this;
-        }
+        ...
 
         @Override
         public boolean onTransact(int code, Parcel data, Parcel reply, int flags) {
             switch (code) {
+                // Server 进程的 Binder，在这里接收 transaction，并将数据
+                // 反序列化以后，调用 hello 抽象方法。
                 case TRANSACTION_hello: {
+                    // enforceInterface 的作用？本人并没完全搞懂，我的理解来看，
+                    // 似乎仅仅是某种校验方式，通过 DESCRIPTOR 来确认给自己发
+                    // 消息的是正确的对象。
+                    // 懂的人可以留言讨论，感激！
                     data.enforceInterface(DESCRIPTOR);
                     String _arg0 = data.readString();
                     this.hello(_arg0);
-                    reply.writeNoException();
-                    return true;
+                    ...
                 }
-                default: {
-                    return super.onTransact(code, data, reply, flags);
-                }
+                ...
             }
         }
 
+        /**
+         * Client 进程持有的代理类，通过 Stub.asInterface 创建。
+         * Proxy 也实现了 IWelcome，会将方法调用的数据，都通过 mRemote 转发给
+         * 远程的 Binder 实体。
+         */
         private static class Proxy implements IWelcome {
             private IBinder mRemote;
 
@@ -186,10 +232,7 @@ public interface IWelcome extends IInterface {
                 mRemote = remote;
             }
 
-            @Override
-            public IBinder asBinder() {
-                return mRemote;
-            }
+            ...
 
             @Override
             public void hello(String words) {
@@ -199,22 +242,28 @@ public interface IWelcome extends IInterface {
                     _data.writeInterfaceToken(DESCRIPTOR);
                     _data.writeString(words);
                     mRemote.transact(Stub.TRANSACTION_hello, _data, _reply, 0);
-                    _reply.readException();
-                } finally {
-                    _reply.recycle();
-                    _data.recycle();
+                    ...
                 }
+                ...
             }
         }
     }
-
-    public void hello(String words);
 }
 ```
 
+总结一下 AIDL 生成的东西：
 
+1. 一个继承 IInterface 的接口 IWelcome，与 AIDL 定义的方法一一对应，用于声明业务相关方法。
+2. Proxy 类 和 Stub 类，都实现了 IWelcome，分别对应于本地进程和远程进程的实例。
+3. Stub 类在 Server 进程中实例化，并通过 Service.onBind 方法传递给 Client 进程。
+4. Client 进程接收到 IBinder 以后，通过 Stub.asInterface 方法转换成 IWelcome 之后使用。
+5. Stub.asInterface 在本地进程工作时，返回 Stub 实例。否则，创建一个 Proxy 实例来代理通讯。
 
-## IInterface
+那么，现在你应该能够明白，为什么需要 AIDL，而不是直接使用 IBinder.transact 来通讯？
+
+因为 AIDL 通过定义 IWelcome，将具体的 transaction 细节隐藏起来，使用者只需直接调用接口方法即可，很好的将业务逻辑与平台代码分离开来，实现了较好的软件设计。
+
+另外，通过这个例子，你应该也清楚了 IInterface 的作用。他不是 IPC 所需的“不可或缺“的部分。他实际上是用于抽象出业务逻辑，实现更好设计的一个工具。有了他，业务代码就可以**依赖接口，不依赖具体实现**了。
 
 ## Service 是必须的吗？
 
