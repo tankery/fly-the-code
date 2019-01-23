@@ -267,19 +267,43 @@ public interface IWelcome extends IInterface {
 
 ## Service 是必须的吗？
 
+初遇 binder 之时，很多人都会认为，binder 只能通过 Service.onBind 返回。因为 binder 不是基于 Client - Server 架构嘛，bind service 的各个接口不都有 IBinder 的接口嘛。一切看起来都那么合拍。
 
+但是，Service 是必须的吗？
 
-## 跨进程的 Listener
+回到背景问题，跨进程的观察者模式，被观察者一定是用 Service 无疑了，这样任何进程都可以绑定到数据源上，也可以远程调用 Service 的方法进行注册之类的操作。但是被观察者的数据，如何才能发布出来呢？难道每个观察者，都需要创建一个 Service？这太疯狂了。Binder 能成为 Android 的基石，绝不能受限于 Service，要想想 ContentProvider 之类的组件，不可能还需要创建 Service 吧？
 
-Client 可以监听 Server 进程的死亡事件
+道理很简单，然而资料很少，似乎大家并不关心 Service 之外的场景。或许是大家其实并没有场景，硬是要分析一通，反正大家都这么说的，不会错。
+
+很幸运，我们有这么一个有趣的场景，于是可以继续深挖，打破 Service 的边界，再往前走一步。
+
+有道是，“踏破铁鞋无觅处”。其实 Binder 最直接的使用方法，已经写在了 IBinder 的注释里：
+
+> This mechanism ensures that when an IBinder is written into a Parcel and sent to another process, if that other process sends a reference to that same IBinder back to the original process, then the original process will receive the same IBinder object back.  These semantics allow IBinder/Binder objects to be used as a unique identity (to serve as a token or for other purposes) that can be managed across processes.
+
+意思就是说，你可以把 IBinder 写到 Parcel 里，并发送给任何进程。binder 机制可以保证在反序列化时，同一个进程拿出来的，一定是同一个实例，并且它是与 Server 进程匹配的，可以进行 transaction 调用。
+
+也就是说，如果你是在 Server 进程（原始进程）反序列化，拿出的 IBinder，就是 Binder 本身。如果在其他进程反序列化，**并持有了 IBinder 实例**，再次反序列化出来的，仍然是之前的实例。
+
+> 注意，如果你未持有 IBinder 的引用，那么之前的实例会被 GC 回收，再次反序列化，将会创建新的实例。
+
+这就为我们的目标，打下了最后一个基础。
+
+观察者进程可以创建 Binder，并以 binder 为 token，向数据源（被观察者）注册。数据源收到注册请求后，持有这个 IBinder，就可以通过它，将数据反向传递给观察者进程了。
+
+并且，由于 binder token 的唯一性。观察者进程在注销时，把注册时的 binder 再次序列化传递到数据源，数据源就可以找到注册表中对应的 IBinder，并将其删除了。
+
+最后解一个附加题：观察者进程意外死亡了怎么办？数据源进程岂不是存在着内存泄露的风险？
+
+其实，Client 是可以监听 Server 进程的死亡事件的。针对注册表里的 binder 来说，观察者进程创建了 Binder，它就是 Server 进程。而数据源进程反序列化出 BinderProxy，就是 Client 进程。数据源可以通过 `linkToDeath` 来监听观察者的意外死亡，及时从注册表中删除这个观察者。避免资源的泄露。
 
 ## 后记
 
-之所以想到 Binder，是由于我发现我们的需求实际上和 [GMS Fitness API](https://developers.google.com/android/reference/com/google/android/gms/fitness/Fitness) 很像，都是需要从一个独立的进程来获取数据。于是我阅读了 GMS 的代码（被混淆以后的。。），发现他居然使用了 Binder。由于对 Binder 并不熟悉，当时的我非常惊讶，想知道这是如何做到的，于是走进 Binder 的世界，打开了一扇大门。
+之所以想到 Binder，是因为我发现我们的需求实际上和 [GMS Fitness API](https://developers.google.com/android/reference/com/google/android/gms/fitness/Fitness) 很像，都是需要从一个独立的进程来获取数据。于是我阅读了 GMS 的代码（被混淆以后的。。），发现他居然使用了 Binder。由于对 Binder 并不熟悉，当时的我非常惊讶，想知道这是如何做到的，于是走进 Binder 的世界，打开了一扇大门。
 
 了解过程中，发现 [LocationManager](https://android.googlesource.com/platform/frameworks/base/+/3b817ae/services/java/com/android/server/LocationManagerService.java) 也是使用 Binder 实现的，也给我的代码设计提供了非常好的参考资料。
 
-于是感慨道，还是应该要站在巨人的肩膀上。
+于是感慨道，还是应该要站在巨人的肩膀上啊。
 
 ## 附录
 
@@ -288,5 +312,4 @@ Client 可以监听 Server 进程的死亡事件
 
 想了解实现细节，重要的源码，全面的研究 Binder。可以看这篇文章：
 《Android跨进程通信IPC之13——Binder总结》： https://www.jianshu.com/p/485233919c15
-
 
