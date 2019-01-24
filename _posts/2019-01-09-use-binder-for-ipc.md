@@ -7,11 +7,16 @@ categories:
 tags:
   - Android
   - IPC
+image:
+  feature: use-binder-for-ipc/binder-rings.jpg
+  alt: "Binder Rings"
+  credit: jkfid
+  creditlink: https://www.flickr.com/photos/jkfid/4333769080
 comments: true
 published: true
 ---
 
-什么是 Binder？我面试时听到过很多答案，比如 “bindService 返回的那个对象”，“binder 就是 AIDL”。。如果你的理解仅限于 Service 的场景，那你的世界就太小了。
+什么是 Binder？我面试时听到过很多答案，比如 “bindService 返回的那个对象”，“binder 就是 AIDL”。。如果你的理解仅限于此，那你的世界就太小了。
 
 Binder 可以说是 Android 系统最重要的基石之一，你能想到的各种涉及跨进程调用的场景，几乎都是使用 Binder 机制实现，比如 broadcast receiver，比如 content provider，比如 Activity result，等等。了解了 Binder，就拿到了新世界的船票，可以尽情畅游在跨进程的世界里了。
 
@@ -27,19 +32,19 @@ Binder 可以说是 Android 系统最重要的基石之一，你能想到的各�
 
 比如运动需要监听心率变化，睡眠也需要监听心率变化，而心率模块还希望做全天24小时的心率监测。
 
-如果是同一个进程，使用观察者模式就能很轻易的解决这个问题（多个模块同时观察同一个数据源）。但这些功能都处在不同的App中，属于不同的进程。这时候，事情就变得有意思起来：怎样才能实现一个跨进程的观察者呢？
+如果是同一个进程，使用观察者模式就能很轻易的解决这个问题（多个模块同时观察同一个数据源）。但这些功能都处在不同的App中，属于不同的进程。这时候，事情就变得有意思起来：**怎样才能实现一个跨进程的观察者呢？**
 
 ## 方案的选择
 
 想要实现跨进程的数据传递，我们有很多选择。可以在数据变化时，发送广播，接收方通过单例、静态类等方式将数据继续往外传播；也可以用 start Service 等方式，让数据都在接收方的一个 Service 中处理；或者用 Content Provider 对外提供数据，并使用 provider 的 notify 机制来通知数据变化，等等。
 
-这些方案都有着各自的优势和适用场景。所以实际上，在我们的应用中，这些方式我们都在使用。比如运动会广播自己的运动状态变化（无需关心接收者），比如接收到手机消息时通过 start service 来处理消息，比如通过 provider 提供统一的运动数据接口，等等。
+这些方案都有着各自的优势和适用场景。所以实际上，在我们的应用中，这些方式都在使用。比如运动会广播自己的运动状态变化（无需关心接收者），比如接收到手机消息时通过 start service 来处理消息，比如通过 provider 提供统一的运动数据接口，等等。
 
 但我发现，这些跨进程方案，都不适用于我们的场景。
 
-跨进程的数据监听，要求数据源像 observable 那样，能够知道都哪些 observer 在监听，以便动态的开启、关闭数据服务。更麻烦的是还得知道 observer 进程挂掉了，以便关闭服务。这就使得我们需要一套注册、注销机制来管理数据源，和数据对应的 observer，并且将指定数据精确的发布给它的 observer。
+跨进程的数据监听，要求数据源像 observable 那样，能够知道都哪些 observer 在监听，以便动态的开启、关闭数据服务。这就使得我们需要一套注册、注销机制来管理数据源，和数据对应的 observer，并且将指定数据精确的发布给它的 observer。
 
-于是，选择了直接使用 binder。
+于是，我选择了直接使用 binder。
 
 ## Android 的基石 - Binder
 
@@ -95,7 +100,7 @@ class MainActivity : Activity(), ServiceConnection {
 }
 ```
 
-> （完整代码移步 GitHub： https://github.com/tankery/binder-demo）
+> （完整代码移步 GitHub： <https://github.com/tankery/binder-demo>）
 
 从这个代码看到，我们在独立进程的 Service 中创建了一个 Binder 对象，并重载 onTransaction 来接收交易信息。接着，在 onBind 函数返回 Binder 对象。
 
@@ -255,11 +260,11 @@ public interface IWelcome extends IInterface {
 
 1. 一个继承 IInterface 的接口 IWelcome，与 AIDL 定义的方法一一对应，用于声明业务相关方法。
 2. Proxy 类 和 Stub 类，都实现了 IWelcome，分别对应于本地进程和远程进程的实例。
-3. Stub 类在 Server 进程中实例化，并通过 Service.onBind 方法传递给 Client 进程。
-4. Client 进程接收到 IBinder 以后，通过 Stub.asInterface 方法转换成 IWelcome 之后使用。
-5. Stub.asInterface 在本地进程工作时，返回 Stub 实例。否则，创建一个 Proxy 实例来代理通讯。
+3. Stub 类在 Server 进程中实例化，并通过 `Service.onBind` 方法传递给 Client 进程。
+4. Client 进程接收到 IBinder 以后，通过 `Stub.asInterface` 方法转换成 IWelcome 之后使用。
+5. `Stub.asInterface` 在本地进程工作时，返回 Stub 实例。否则，创建一个 Proxy 实例来代理通讯。
 
-那么，现在你应该能够明白，为什么需要 AIDL，而不是直接使用 IBinder.transact 来通讯？
+那么，现在你应该能够明白，为什么需要 AIDL，而不是直接使用 `IBinder.transact` 来通讯？
 
 因为 AIDL 通过定义 IWelcome，将具体的 transaction 细节隐藏起来，使用者只需直接调用接口方法即可，很好的将业务逻辑与平台代码分离开来，实现了较好的软件设计。
 
@@ -267,13 +272,13 @@ public interface IWelcome extends IInterface {
 
 ## Service 是必须的吗？
 
-初遇 binder 之时，很多人都会认为，binder 只能通过 Service.onBind 返回。因为 binder 不是基于 Client - Server 架构嘛，bind service 的各个接口不都有 IBinder 的接口嘛。一切看起来都那么合拍。
+初遇 binder 之时，很多人都会认为，binder 只能通过 `Service.onBind` 返回。因为 binder 不是基于 Client - Server 架构嘛，bind service 的各个接口不都有 IBinder 的接口嘛。一切看起来都那么合拍。
 
 但是，Service 是必须的吗？
 
-回到背景问题，跨进程的观察者模式，被观察者一定是用 Service 无疑了，这样任何进程都可以绑定到数据源上，也可以远程调用 Service 的方法进行注册之类的操作。但是被观察者的数据，如何才能发布出来呢？难道每个观察者，都需要创建一个 Service？这太疯狂了。Binder 能成为 Android 的基石，绝不能受限于 Service，要想想 ContentProvider 之类的组件，不可能还需要创建 Service 吧？
+回到背景问题，跨进程的观察者模式，被观察者一定是用 Service 无疑了，这样任何进程都可以绑定到数据源上，也可以远程调用 Service 的方法进行注册之类的操作。但是被观察者的数据，如何才能发布出来呢？难道每个观察者，都需要创建一个 Service？这太疯狂了。Binder 想要成为 Android 的基石，绝不能受限于 Service，要想想 ContentProvider 之类的组件，不可能还需要创建 Service 吧？
 
-道理很简单，然而资料很少，似乎大家并不关心 Service 之外的场景。或许是大家其实并没有场景，硬是要分析一通，反正大家都这么说的，不会错。
+道理很简单，然而资料却很少，或许大家并不关心 Service 之外的场景。亦或许是大家其实并没有场景，硬是要分析一通，反正大家都这么说的，不会错。
 
 很幸运，我们有这么一个有趣的场景，于是可以继续深挖，打破 Service 的边界，再往前走一步。
 
@@ -287,11 +292,15 @@ public interface IWelcome extends IInterface {
 
 > 注意，如果你未持有 IBinder 的引用，那么之前的实例会被 GC 回收，再次反序列化，将会创建新的实例。
 
-这就为我们的目标，打下了最后一个基础。
+这就为我们的目标，打下了最后一个地基。
+
+## 实现跨进程的观察者模式
 
 观察者进程可以创建 Binder，并以 binder 为 token，向数据源（被观察者）注册。数据源收到注册请求后，持有这个 IBinder，就可以通过它，将数据反向传递给观察者进程了。
 
 并且，由于 binder token 的唯一性。观察者进程在注销时，把注册时的 binder 再次序列化传递到数据源，数据源就可以找到注册表中对应的 IBinder，并将其删除了。
+
+思路清晰了，实现起来就不难。后面如果有时间，我再将代码整理开源出来，或者直接写一个 library 供大家使用。
 
 最后解一个附加题：观察者进程意外死亡了怎么办？数据源进程岂不是存在着内存泄露的风险？
 
@@ -307,9 +316,9 @@ public interface IWelcome extends IInterface {
 
 ## 附录
 
-想了解 Binder 机制的原理，通过例子掌握核心内容。可以看这里：
-《写给 Android 应用工程师的 Binder 原理剖析》： https://zhuanlan.zhihu.com/p/35519585
+想了解 Binder 机制的原理，通过例子掌握核心内容。可以看这里：<br>
+《写给 Android 应用工程师的 Binder 原理剖析》： <https://zhuanlan.zhihu.com/p/35519585>
 
-想了解实现细节，重要的源码，全面的研究 Binder。可以看这篇文章：
-《Android跨进程通信IPC之13——Binder总结》： https://www.jianshu.com/p/485233919c15
+想了解实现细节，重要的源码，全面的研究 Binder。可以看这篇文章：<br>
+《Android跨进程通信IPC之13——Binder总结》： <https://www.jianshu.com/p/485233919c15>
 
