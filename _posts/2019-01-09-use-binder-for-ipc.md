@@ -64,39 +64,39 @@ Binder 可以说是 Android 系统最重要的基石之一，你能想到的各�
 // Kotlin code
 // Service (process=":remote")
 class MainService : Service() {
-    private val binder = object : Binder() {
-        override fun onTransact(code: Int, data: Parcel, reply: Parcel?, flags: Int): Boolean {
-            if (code == BINDER_TRANSACT_CODE) {
-                val value = data.readString()
-                Log.i(TAG, "Got value from activity: $value")
-            }
-            return super.onTransact(code, data, reply, flags)
-        }
+  private val binder = object : Binder() {
+    override fun onTransact(code: Int, data: Parcel, ...): Boolean {
+      if (code == BINDER_TRANSACT_CODE) {
+        val value = data.readString()
+        Log.i(TAG, "Got value from activity: $value")
+      }
+      return super.onTransact(code, data, reply, flags)
     }
+  }
 
-    override fun onBind(intent: Intent) = binder
+  override fun onBind(intent: Intent) = binder
 }
 
 // Activity
 class MainActivity : Activity(), ServiceConnection {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        ...
-        bindService(intent, this, Service.BIND_AUTO_CREATE)
-    }
+  override fun onCreate(savedInstanceState: Bundle?) {
     ...
-    override fun onServiceConnected(name: ComponentName?, remote: IBinder?) {
-        Log.i(TAG, "Service connected, got binder $remote in activity")
+    bindService(intent, this, Service.BIND_AUTO_CREATE)
+  }
+  ...
+  override fun onServiceConnected(name: ComponentName?, remote: IBinder?) {
+    Log.i(TAG, "Service connected, got binder $remote in activity")
 
-        val data = Parcel.obtain()
-        try {
-            data.writeString("Hello World!")
-            remote?.transact(BINDER_TRANSACT_CODE, data, null, 0)
-            ...
-        } finally {
-            data.recycle()
-        }
+    val data = Parcel.obtain()
+    try {
+      data.writeString("Hello World!")
+      remote?.transact(BINDER_TRANSACT_CODE, data, null, 0)
+      ...
+    } finally {
+      data.recycle()
     }
-    ...
+  }
+  ...
 }
 ```
 
@@ -147,112 +147,117 @@ interface IWelcome {
 他生成的代码类似下面这样（省略大量错误判断和非关键逻辑），我将文章直接写到了注释里，不要像编译器一样直接忽略了哈。。
 
 ``` java
-// Java code
-
+// Java code: IWelcome
 /**
  * IWelcome 是我们定义的接口，和 AIDL 一致，包含了 void hello(String words) 方法。
  * 并且，扩展了 IInterface，有什么用？看后文。
  */
-public interface IWelcome extends IInterface {
+interface IWelcome extends IInterface {
+  public void hello(String words);
+}
+```
 
-    public void hello(String words);
+``` java
+// Java code: Stub
+/**
+ * “Local-side IPC implementation stub class.”
+ *
+ * Stub 是一个抽象类，Server 进程需继承 Stub，并实例化，用于初始化 IPC 环境，
+ * 以及接收跨进程消息。
+ *
+ * Stub 实现了 IWelcome，所以它也是一个 IInterface，并将 IWelcome 的方法
+ * 交给子类去实现。
+ */
+abstract class Stub extends Binder implements IWelcome {
 
-    /**
-     * “Local-side IPC implementation stub class.”
-     *
-     * Stub 是一个抽象类，Server 进程需继承 Stub，并实例化，用于初始化 IPC 环境，
-     * 以及接收跨进程消息。
-     *
-     * Stub 实现了 IWelcome，所以它也是一个 IInterface，并将 IWelcome 的方法
-     * 交给子类去实现。
-     */
-    public static abstract class Stub extends Binder implements IWelcome {
+/**
+ * “Construct the stub at attach it to the interface.”
+ *
+ * 注意这里，Stub 初始化时，将自己（实际上是将继承类）绑定到 Binder 的
+ * interface 上。什么用？看后文。
+ */
+public Stub() {
+  this.attachInterface(this, DESCRIPTOR);
+}
 
-        /**
-         * “Construct the stub at attach it to the interface.”
-         *
-         * 注意这里，Stub 初始化时，将自己（实际上是将继承类）绑定到 Binder 的
-         * interface 上。什么用？看后文。
-         */
-        public Stub() {
-            this.attachInterface(this, DESCRIPTOR);
-        }
+/**
+ * “Cast an IBinder object into IWelcome interface,
+ * generating a proxy if needed.”
+ *
+ * 敲黑板！！！
+ * 我认为，IInterface 最核心的作用，就是这个方法做的事情了。
+ *
+ * 无论是哪个进程，拿到反序列化的 IBinder 以后，通过这个静态方法来获取
+ * IWelcome 接口。
+ *
+ * 如果是 Server 进程（local），可以从 binder 中直接取出之前 attach
+ * 的 IInterface 实例，那么调用 IWelcome 的方法，就相当于直接调用
+ * Stub 实例的方法了。
+ *
+ * 如果是 Client 进程，IBinder 只是系统在远程创建的一个 Proxy 类，
+ * 并无实现，因此，iin 将变成 null，此时 asInterface 会创建一个
+ * Stub.Proxy 代理类，来实现 IWelcome 接口。
+ */
+public static IWelcome asInterface(IBinder obj) {
+  IInterface iin = obj.queryLocalInterface(DESCRIPTOR);
+  if (iin instanceof IWelcome) {
+    return (IWelcome) iin;
+  }
+  return new Proxy(obj);
+}
 
-        /**
-         * “Cast an IBinder object into IWelcome interface,
-         * generating a proxy if needed.”
-         *
-         * 敲黑板！！！
-         * 我认为，IInterface 最核心的作用，就是这个方法做的事情了。
-         *
-         * 无论是哪个进程，拿到反序列化的 IBinder 以后，通过这个静态方法来获取
-         * IWelcome 接口。
-         *
-         * 如果是 Server 进程（local），可以从 binder 中直接取出之前 attach
-         * 的 IInterface 实例，那么调用 IWelcome 的方法，就相当于直接调用
-         * Stub 实例的方法了。
-         *
-         * 如果是 Client 进程，IBinder 只是系统在远程创建的一个 Proxy 类，
-         * 并无实现，因此，iin 将变成 null，此时 asInterface 会创建一个
-         * Stub.Proxy 代理类，来实现 IWelcome 接口。
-         */
-        public static IWelcome asInterface(IBinder obj) {
-            IInterface iin = obj.queryLocalInterface(DESCRIPTOR);
-            if (iin instanceof IWelcome) {
-                return (IWelcome) iin;
-            }
-            return new IWelcome.Stub.Proxy(obj);
-        }
+...
 
-        ...
-
-        @Override
-        public boolean onTransact(int code, Parcel data, Parcel reply, int flags) {
-            switch (code) {
-                // Server 进程的 Binder，在这里接收 transaction，并将数据
-                // 反序列化以后，调用 hello 抽象方法。
-                case TRANSACTION_hello: {
-                    // enforceInterface 的作用？本人并没完全搞懂，我的理解来看，
-                    // 似乎仅仅是某种校验方式，通过 DESCRIPTOR 来确认给自己发
-                    // 消息的是正确的对象。
-                    // 懂的人可以留言讨论，感激！
-                    data.enforceInterface(DESCRIPTOR);
-                    String _arg0 = data.readString();
-                    this.hello(_arg0);
-                    ...
-                }
-                ...
-            }
-        }
-
-        /**
-         * Client 进程持有的代理类，通过 Stub.asInterface 创建。
-         * Proxy 也实现了 IWelcome，会将方法调用的数据，都通过 mRemote 转发给
-         * 远程的 Binder 实体。
-         */
-        private static class Proxy implements IWelcome {
-            private IBinder mRemote;
-
-            Proxy(IBinder remote) {
-                mRemote = remote;
-            }
-
-            ...
-
-            @Override
-            public void hello(String words) {
-                Parcel _data = Parcel.obtain();
-                Parcel _reply = Parcel.obtain();
-                try {
-                    _data.writeInterfaceToken(DESCRIPTOR);
-                    _data.writeString(words);
-                    mRemote.transact(Stub.TRANSACTION_hello, _data, _reply, 0);
-                    ...
-                }
-                ...
-            }
-        }
+@Override
+public boolean onTransact(int code, Parcel data, Parcel reply, int flags) {
+  switch (code) {
+    // Server 进程的 Binder，在这里接收 transaction，并将数据
+    // 反序列化以后，调用 hello 抽象方法。
+    case TRANSACTION_hello: {
+      // enforceInterface 的作用？本人并没完全搞懂，我的理解来看，
+      // 似乎仅仅是某种校验方式，通过 DESCRIPTOR 来确认给自己发
+      // 消息的是正确的对象。
+      // 懂的人可以留言讨论，感激！
+      data.enforceInterface(DESCRIPTOR);
+      String _arg0 = data.readString();
+      this.hello(_arg0);
+      ...
     }
+    ...
+  }
+}
+
+}
+```
+
+``` java
+// Java code: Proxy
+/**
+ * Client 进程持有的代理类，通过 Stub.asInterface 创建。
+ * Proxy 也实现了 IWelcome，会将方法调用的数据，都通过 mRemote 转发给
+ * 远程的 Binder 实体。
+ */
+class Proxy implements IWelcome {
+  private IBinder mRemote;
+
+  Proxy(IBinder remote) {
+    mRemote = remote;
+  }
+
+  ...
+
+  @Override
+  public void hello(String words) {
+    Parcel _data = Parcel.obtain();
+    Parcel _reply = Parcel.obtain();
+    try {
+      _data.writeInterfaceToken(DESCRIPTOR);
+      _data.writeString(words);
+      mRemote.transact(Stub.TRANSACTION_hello, _data, _reply, 0);
+      ...
+    }
+    ...
+  }
 }
 ```
 
