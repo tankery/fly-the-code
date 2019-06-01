@@ -72,7 +72,7 @@ public class TicketUtil {
 
 final int age = 20;
 final int price = TicketUtil.getPrice(age);
-Log.d(TAG, "Price of age " + age + " is $" + price);
+Log.d(TAG, "Price of age " + age + " is " + price);
 ```
 
 然后很轻松的，直接转换成 Kotlin 语法看看：
@@ -90,7 +90,7 @@ object TicketUtil {
 
 val age: Int = 20
 val price: Int = TicketUtil.getPrice(age)
-Log.d(TAG, "Price of age $age is $$price")
+Log.d(TAG, "Price of age $age is $price")
 ```
 
 就这样？？？删了几个分号，把类型从前置挪到末尾，把几个修饰符去掉？
@@ -106,7 +106,7 @@ Log.d(TAG, "Price of age $age is $$price")
 
 val age = 20
 val price = TicketUtil.getPrice(age)
-Log.d(TAG, "Price of age $age is $$price")
+Log.d(TAG, "Price of age $age is $price")
 ```
 
 其次，`if-else` 在 Java 中只是个声明（statement），而在 Kotlin 中，它也是表达式（expression）。表达式是有类型，有值的。所以我们可以把 `return` 提出来：
@@ -146,7 +146,7 @@ fun getPrice(age: Int) =
 
 val age = 20
 val price = getPrice(age)
-Log.d(TAG, "Price of age $age is $$price")
+Log.d(TAG, "Price of age $age is $price")
 ```
 
 你看，到了这里，你会发现，用 Kotlin 写出来的代码，确实很简洁，只要不影响理解，能去掉的东西 Kotlin 坚决不留。
@@ -190,7 +190,7 @@ Kotlin 的 lambda 函数是有类型的。比如 `{ a: Int -> a * 10 }` 是一�
 
 ```kotlin
 fun printPrice(age: Int, getPrice: (Int) -> Int) {
-    Log.d(TAG, "Price of age $age is $${getPrice(age)}")
+    Log.d(TAG, "Price of age $age is ${getPrice(age)}")
 }
 ```
 
