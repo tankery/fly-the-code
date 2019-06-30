@@ -8,6 +8,7 @@ tags:
   - GitHub
   - Android
   - CI
+  - Jetpack
 image:
   feature: elegant-github-repo/travis-ci.png
   alt: "Travis CI"
