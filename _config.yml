@@ -92,7 +92,8 @@ post_conf:
     - <!-- more -->
   more_text: Read More...
 
-plugins:
+# Plugins
+gems:
   - jekyll-paginate
   - jekyll-feed
 
